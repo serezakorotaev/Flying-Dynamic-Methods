@@ -84,24 +84,24 @@ public class DynamicService {
     }
 
     ////////
-    public double dV_dt(double y, double alpha, double Xa, double currentWeight, double fittaC) {
-        return (getPushing(y) * Math.cos(alpha) - Xa) / currentWeight - getAccelerationOfGravityOnHigh(y) * Math.sin(fittaC);
+    public double dV_dt(double y, double Xa, double t, double tetta, double fetta_c) {
+        return (getPushing(y) * Math.cos(alpha(tetta, fetta_c)) - Xa) / getCurrentWeight(t) - getAccelerationOfGravityOnHigh(y) * Math.sin(fetta_c);
     }
 
-    public double dFettaC_dt(double y, double alpha, double Ya, double currentWeight, double fittaC, double V) {
-        return (getPushing(y) * Math.sin(alpha) + Ya) / (currentWeight * V) - getAccelerationOfGravityOnHigh(y) * Math.cos(fittaC) / V;
+    public double dFettaC_dt(double y, double Ya, double t, double tetta, double fetta_c, double V) {
+        return (getPushing(y) * Math.sin(alpha(tetta, fetta_c)) + Ya) / (getCurrentWeight(t) * V) - getAccelerationOfGravityOnHigh(y) * Math.cos(fetta_c) / V;
     }
 
-    public double dX_dt(double V, double fittaC) {
-        return V * Math.cos(fittaC);
+    public double dX_dt(double V, double fetta_c) {
+        return V * Math.cos(fetta_c);
     }
 
-    public double dY_dt(double V, double fittaC) {
-        return V * Math.sin(fittaC);
+    public double dY_dt(double V, double fetta_c) {
+        return V * Math.sin(fetta_c);
     }
 
-    public double dWz_dt(double alpha, double y, double V) {
-        return Mz_a(alpha, y, V) * alpha / Jz;
+    public double dWz_dt(double tetta, double fetta_c, double y, double V) {
+        return Mz_a(tetta, fetta_c, y, V) * alpha(tetta, fetta_c) / Jz;
     }
 
     public double dTetta_dt(double Wz) {
@@ -109,8 +109,16 @@ public class DynamicService {
     }
 
     // градиент статического аэродинамического момента относительно связанной оси z ЛА
-    public double Mz_a(double alpha, double y, double V) {
-        return -(approximateService.Cxa(getMach(y, V)) + interpolationService.Cya(getMach(y, V)) * alpha) * Sm * getDensity(y) * Math.pow(V, 2) * Ld_Lc / 2;
+    public double Mz_a(double tetta, double fetta_c, double y, double V) {
+        return -(approximateService.Cxa(getMach(y, V)) + interpolationService.Cya(getMach(y, V)) * alpha(tetta, fetta_c)) * Sm * getDensity(y) * Math.pow(V, 2) * Ld_Lc / 2;
+    }
+
+    public double Xa(double y, double V) {
+        return approximateService.Cxa(getMach(y, V)) * Sm * getDensity(y) * Math.pow(V, 2) / 2;
+    }
+
+    public double Ya(double y, double V, double tetta, double fetta_c) {
+        return interpolationService.Cya(getMach(y, V)) * alpha(tetta, fetta_c) * Sm * getDensity(y) * Math.pow(V, 2) / 2;
     }
 
     // угол альфа
@@ -119,17 +127,17 @@ public class DynamicService {
     }
 
     // Текущий вес
-    private double getCurrentWeight(double t) {
+    public double getCurrentWeight(double t) {
         return m0 - m_dot * t;
     }
 
     // Мая
-    private double getMach(double y, double V) {
+    public double getMach(double y, double V) {
         return V / (20.0468 * Math.sqrt(getTemperature(getGeopotencialHigh(y))));
     }
 
     //Тяга
-    private double getPushing(double y) {
+    public double getPushing(double y) {
         return 2100 * m_dot + Sa * (101325 - getPressure(getGeopotencialHigh(y), getTemperature(getGeopotencialHigh(y))));
     }
 }

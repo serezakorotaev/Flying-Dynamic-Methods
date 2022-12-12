@@ -50,7 +50,7 @@ public class ApproximateService {
                     + f3[1] * (M - 0.55) * (M - 0.8) * (M - 0.9);
         }
 
-        if (M >= dataCx1[1][0] && M < dataCx1[4][0]) {
+        if (M >= dataCx1[0][0] && M < dataCx1[5][0]) {
             for (int i = 0; i < 5; ++i) {
                 f1[i] = (dataCx1[i + 1][1] - dataCx1[i][1]) / (dataCx1[i + 1][0] - dataCx1[i][0]);
             }
@@ -75,15 +75,15 @@ public class ApproximateService {
                     + f5[1] * (M - 1.0) * (M - 1.06) * (M - 1.1) * (M - 1.2) * (M - 1.3);
         }
 
-        if (M >= dataCx2[1][0] && M < dataCx2[4][0]) {
+        if (M >= dataCx2[0][0] && M < dataCx2[3][0]) {
             for (int i = 0; i < 3; ++i) {
-                f1[i] = (f2[i + 1] - f2[i]) / (dataCx2[i + 3][0] - dataCx2[i][0]);
+                f1[i] = (dataCx2[i + 1][1] - dataCx2[i][1]) / (dataCx2[i + 1][0] - dataCx2[i][0]);
             }
             for (int i = 0; i < 2; ++i) {
-                f2[i] = (f3[i + 1] - f3[i]) / (dataCx2[i + 4][0] - dataCx2[i][0]);
+                f2[i] = (f1[i + 1] - f1[i]) / (dataCx2[i + 2][0] - dataCx2[i][0]);
             }
             for (int i = 0; i < 1; ++i) {
-                f3[i] = (f4[i + 1] - f4[i]) / (dataCx2[i + 5][0] - dataCx2[i][0]);
+                f3[i] = (f2[i + 1] - f2[i]) / (dataCx2[i + 3][0] - dataCx2[i][0]);
             }
 
             Cxa = dataCx2[0][1]
