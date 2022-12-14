@@ -22,13 +22,39 @@ public class ExportController {
     private final ExportService exportService;
 
     @GetMapping("/eiler")
-    public ResponseEntity<Resource> export(@RequestParam double dt, @RequestParam boolean alpha) throws IOException {
-        final Resource resource = exportService.exportByEilerMethod(dt, alpha);
+    public ResponseEntity<Resource> exportEiler(@RequestParam double dt, @RequestParam boolean alphaZero) throws IOException {
+        final Resource resource = exportService.exportByEilerMethod(dt, alphaZero);
 
         return ResponseEntity
                 .ok()
                 .cacheControl(CacheControl.noCache())
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "Dynamic_values")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "Dynamic_values_dt" + dt)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .contentLength(resource.contentLength())
+                .body(resource);
+    }
+
+    @GetMapping("/eiler/modify")
+    public ResponseEntity<Resource> exportEilerModify(@RequestParam double dt, @RequestParam boolean alphaZero) throws IOException {
+        final Resource resource = exportService.exportByEilerModifyMethod(dt, alphaZero);
+
+        return ResponseEntity
+                .ok()
+                .cacheControl(CacheControl.noCache())
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "Dynamic_values_Eiler_Modify_dt" + dt)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .contentLength(resource.contentLength())
+                .body(resource);
+    }
+
+    @GetMapping("/kutt")
+    public ResponseEntity<Resource> exportKutt(@RequestParam double dt, @RequestParam boolean alphaZero) throws IOException {
+        final Resource resource = exportService.exportByKuttMethod(dt, alphaZero);
+
+        return ResponseEntity
+                .ok()
+                .cacheControl(CacheControl.noCache())
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "Dynamic_values_Kutt_dt" + dt)
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                 .contentLength(resource.contentLength())
                 .body(resource);

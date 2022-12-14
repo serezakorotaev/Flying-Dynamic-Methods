@@ -23,13 +23,13 @@ import static ru.korotaev.dynamics.constant.Constant.y0;
 
 @Service
 @RequiredArgsConstructor
-public class EilerService {
+public class EilerModifyService {
 
     private final DynamicService dynamicService;
     private final InterpolationService interpolationService;
     private final ConstructService constructService;
 
-    public List<Parameters> eilerMethod(double dt, boolean alphaIsZero) {
+    public List<Parameters> eilerModifyMethod(double dt, boolean alphaIsZero) {
         if (alphaIsZero) System.out.println("запись при угле 0");
         else System.out.println("Изменияющийся угол");
 
@@ -51,18 +51,33 @@ public class EilerService {
         System.out.println("Вывод начальных данных, создание эксель");
         parametersList.add(constructService.constructParameters(n, t, vOld, yOld, xOld, tettaOld, fettaCOld, wzOld));
         //
-        while (t <= T_K) {
-            vNew = vOld + dt * dynamicService.dV_dt(yOld, dynamicService.Xa(yOld, vOld), t, tettaOld, fettaCOld);
-            fettaCNew = fettaCOld + dt * dynamicService.dFettaC_dt(yOld, dynamicService.Ya(yOld, vOld, tettaOld, fettaCOld), t, tettaOld, fettaCOld, vOld);
-            xNew = xOld + dt * dynamicService.dX_dt(vOld, fettaCOld);
-            yNew = yOld + dt * dynamicService.dY_dt(vOld, fettaCOld);
+        double dV;
+        double dFettaC;
+        double dY;
+        double dTetta;
+        double dWz;
+
+        while (t <= T_K - dt) {
+            dV = dt * dynamicService.dV_dt(yOld, dynamicService.Xa(yOld, vOld), t, tettaOld, fettaCOld);
+            dFettaC = dt * dynamicService.dFettaC_dt(yOld, dynamicService.Ya(yOld, vOld, tettaOld, fettaCOld), t, tettaOld, fettaCOld, vOld);
+            dY = dt * dynamicService.dY_dt(vOld, fettaCOld);
+            dTetta = dt * dynamicService.dTetta_dt(wzOld);
+            dWz = dt * dynamicService.dWz_dt(tettaOld, fettaCOld, yOld, vOld);
+
+            vNew = vOld + dt * dynamicService.dV_dt(yOld + dY / 2, dynamicService.Xa(yOld + dY / 2, vOld + dV / 2), t + dt, tettaOld + dTetta / 2, fettaCOld + dFettaC / 2);
+            fettaCNew = fettaCOld + dt * dynamicService.dFettaC_dt(
+                    yOld + dY / 2, dynamicService.Ya(yOld + dY / 2,
+                            vOld + dV / 2, tettaOld + dTetta / 2, fettaCOld + dFettaC / 2), t + dt,
+                    tettaOld + dTetta / 2, fettaCOld + dFettaC / 2, vOld + dV / 2);
+            xNew = xOld + dt * dynamicService.dX_dt(vOld + dV/2, fettaCOld + dFettaC/2);
+            yNew = yOld + dt * dynamicService.dY_dt(vOld + dV/2, fettaCOld + dFettaC/2);
 
             if (alphaIsZero) {
                 tettaNew = fettaCNew;
                 wzNew = dynamicService.dFettaC_dt(yNew, dynamicService.Ya(yNew, vNew, tettaNew, fettaCNew), t + dt, tettaNew, fettaCNew, vNew);
             } else {
-                wzNew = wzOld + dt * dynamicService.dWz_dt(tettaOld, fettaCOld, yOld, vOld);
-                tettaNew = tettaOld + dt * dynamicService.dTetta_dt(wzOld);
+                wzNew = wzOld + dt * dynamicService.dWz_dt(tettaOld + dTetta/2, fettaCOld + dFettaC/2, yOld + dY/2, vOld + dV/2);
+                tettaNew = tettaOld + dt * dynamicService.dTetta_dt(wzOld + dWz/2);
             }
 
             //вырезать, сделать уникальный метод
@@ -105,6 +120,5 @@ public class EilerService {
         }
 
         return parametersList;
-
     }
 }

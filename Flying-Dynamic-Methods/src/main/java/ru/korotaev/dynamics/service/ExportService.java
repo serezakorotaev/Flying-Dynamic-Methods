@@ -9,7 +9,9 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import ru.korotaev.dynamics.model.Parameters;
+import ru.korotaev.dynamics.service.method.EilerModifyService;
 import ru.korotaev.dynamics.service.method.EilerService;
+import ru.korotaev.dynamics.service.method.KuttService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,6 +22,8 @@ import java.util.List;
 public class ExportService {
 
     private final EilerService eilerService;
+    private final EilerModifyService eilerModifyService;
+    private final KuttService kuttService;
 
     public Resource exportByEilerMethod(double dt, boolean alpha) throws IOException {
         final XSSFWorkbook workbook = new XSSFWorkbook();
@@ -30,8 +34,9 @@ public class ExportService {
         return new ByteArrayResource(byteArrayOutputStream.toByteArray());
     }
 
-    private void fillDocument(List<Parameters> parametersList , XSSFWorkbook workbook, boolean alpha) {
-        final XSSFSheet sheet = workbook.createSheet(String.format("основные элементы траектории при %s", alpha ? "изменяющимся угле" : "угле 0 градусов"));
+
+    private void fillDocument(List<Parameters> parametersList, XSSFWorkbook workbook, boolean alpha) {
+        final XSSFSheet sheet = workbook.createSheet(String.format("основные элементы траектории при %s", alpha ? "угле 0 градусов" : "изменяющимся угле"));
         fillHeaders(sheet);
         int rowInExcel = 1;
         for (final Parameters parameters : parametersList) {
@@ -41,7 +46,7 @@ public class ExportService {
         }
     }
 
-    private void fillRow(Parameters parameters , XSSFRow row) {
+    private void fillRow(Parameters parameters, XSSFRow row) {
         row.createCell(0, CellType.STRING).setCellValue(parameters.getN());
         row.createCell(1, CellType.STRING).setCellValue(parameters.getT());
         row.createCell(2, CellType.STRING).setCellValue(parameters.getCurrentWeight());
@@ -80,5 +85,23 @@ public class ExportService {
         headerRow.createCell(14, CellType.STRING).setCellValue("dy/dt, м/с");
         headerRow.createCell(15, CellType.STRING).setCellValue("x, м");
         headerRow.createCell(16, CellType.STRING).setCellValue("dx/dt, м/с");
+    }
+
+    public Resource exportByEilerModifyMethod(double dt, boolean alpha) throws IOException {
+        final XSSFWorkbook workbook = new XSSFWorkbook();
+        fillDocument(eilerModifyService.eilerModifyMethod(dt, alpha), workbook, alpha);
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        workbook.write(byteArrayOutputStream);
+        workbook.close();
+        return new ByteArrayResource(byteArrayOutputStream.toByteArray());
+    }
+
+    public Resource exportByKuttMethod(double dt, boolean alpha) throws IOException {
+        final XSSFWorkbook workbook = new XSSFWorkbook();
+        fillDocument(kuttService.kuttMethod(dt, alpha), workbook, alpha);
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        workbook.write(byteArrayOutputStream);
+        workbook.close();
+        return new ByteArrayResource(byteArrayOutputStream.toByteArray());
     }
 }

@@ -26,7 +26,7 @@ public class InterpolationService {
         double Cya = 0;
         for (int i = 0; i < 15; ++i) {
             if (M > dataCya[i][0] && M < dataCya[i + 1][0]) {
-                Cya = dataCya[i][1] + (M - dataCya[i][0]) * (dataCya[i + 1][0] - dataCya[i][0]) / (dataCya[i + 1][0] - dataCya[i][0]);
+                Cya = dataCya[i][1] + (M - dataCya[i][0]) * (dataCya[i + 1][1] - dataCya[i][1]) / (dataCya[i + 1][0] - dataCya[i][0]);
             }
         }
         if (M > dataCya[14][0]) {
