@@ -131,7 +131,7 @@ public class DynamicService {
         return m0 - m_dot * t;
     }
 
-    // Мая
+    // Мах
     public double getMach(double y, double V) {
         return V / (20.0468 * Math.sqrt(getTemperature(getGeopotencialHigh(y))));
     }

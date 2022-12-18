@@ -3,11 +3,11 @@ package ru.korotaev.dynamics.constant;
 public class Constant {
 
     public static final double V0 = 57; // -м/с
-    public static final double fetta_C0 = 40; // град θ
+    public static final double fetta_C0 = Math.toRadians(40); // град θ
     public static final double m_dot = 86; // кг/с
     public static final double y0 = 2000; // м
     public static final double w_z0 = 0; // c^-1
-    public static final double tetta_0 = 40; // град ϑ
+    public static final double tetta_0 = Math.toRadians(40); // град ϑ
     public static final double t0 = 0;
     public static final double x0 = 0;
     public static final double T_1 = 4.73;

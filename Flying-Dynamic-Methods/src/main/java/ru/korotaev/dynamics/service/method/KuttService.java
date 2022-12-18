@@ -101,24 +101,24 @@ public class KuttService {
             kY3 = dt * dynamicService.dY_dt(vOld + kV2 / 2, fettaCOld + kFettaC2 / 2);
             kWz3 = dt * dynamicService.dWz_dt(tettaOld + kTetta2 / 2, fettaCOld + kFettaC2 / 2, yOld + kY2 / 2, vOld + kV2 / 2);
 
-            kV4 = dt * dynamicService.dV_dt(yOld + kY3 / 2, dynamicService.Xa(yOld + kY3 / 2, vOld + kV3 / 2), t + dt, tettaOld + kTetta3 / 2, fettaCOld + kFettaC3 / 2);
-            kFettaC4 = dt * dynamicService.dFettaC_dt(yOld + kY3 / 2, dynamicService.Ya(yOld + kY3 / 2, vOld + kV3 / 2, tettaOld + kTetta3 / 2, fettaCOld + kFettaC3 / 2), t + dt, tettaOld + kTetta3 / 2, fettaCOld + kFettaC3 / 2, vOld + kV3 / 2);
-            kTetta4 = dt * dynamicService.dTetta_dt(wzOld + kWz3 / 2);
-            kX4 = dt * dynamicService.dX_dt(vOld + kV3 / 2, fettaCOld + kFettaC3 / 2);
-            kY4 = dt * dynamicService.dY_dt(vOld + kV3 / 2, fettaCOld + kFettaC3 / 2);
-            kWz4 = dt * dynamicService.dWz_dt(tettaOld + kTetta3 / 2, fettaCOld + kFettaC3 / 2, yOld + kY3 / 2, vOld + kV3 / 2);
+            kV4 = dt * dynamicService.dV_dt(yOld + kY3, dynamicService.Xa(yOld + kY3, vOld + kV3), t + dt, tettaOld + kTetta3, fettaCOld + kFettaC3);
+            kFettaC4 = dt * dynamicService.dFettaC_dt(yOld + kY3, dynamicService.Ya(yOld + kY3, vOld + kV3, tettaOld + kTetta3, fettaCOld + kFettaC3), t + dt, tettaOld + kTetta3, fettaCOld + kFettaC3, vOld + kV3);
+            kTetta4 = dt * dynamicService.dTetta_dt(wzOld + kWz3);
+            kX4 = dt * dynamicService.dX_dt(vOld + kV3, fettaCOld + kFettaC3);
+            kY4 = dt * dynamicService.dY_dt(vOld + kV3, fettaCOld + kFettaC3);
+            kWz4 = dt * dynamicService.dWz_dt(tettaOld + kTetta3, fettaCOld + kFettaC3, yOld + kY3, vOld + kV3);
 
-            vNew = vOld + (kV1 + kV2 + kV3 + kV4) / 6;
-            fettaCNew = fettaCOld + (kFettaC1 + kFettaC2 + kFettaC3 + kFettaC4) / 6;
-            xNew = xOld + (kX1 + kX2 + kX3 + kX4) / 6;
-            yNew = yOld + (kY1 + kY2 + kY3 + kY4) / 6;
+            vNew = vOld + (kV1 + 2*kV2 + 2*kV3 + kV4) / 6;
+            fettaCNew = fettaCOld + (kFettaC1 + 2*kFettaC2 + 2*kFettaC3 + kFettaC4) / 6;
+            xNew = xOld + (kX1 + 2*kX2 + 2*kX3 + kX4) / 6;
+            yNew = yOld + (kY1 + 2*kY2 + 2*kY3 + kY4) / 6;
 
             if (alphaIsZero) {
                 tettaNew = fettaCNew;
                 wzNew = dynamicService.dFettaC_dt(yNew, dynamicService.Ya(yNew, vNew, tettaNew, fettaCNew), t + dt, tettaNew, fettaCNew, vNew);
             } else {
-                wzNew = wzOld + (kWz1 + kWz2 + kWz3 + kWz4) / 6;
-                tettaNew = tettaOld + (kTetta1 + kTetta2 + kTetta3 + kTetta4) / 6;
+                wzNew = wzOld + (kWz1 + 2*kWz2 + 2*kWz3 + kWz4) / 6;
+                tettaNew = tettaOld + (kTetta1 + 2*kTetta2 + 2*kTetta3 + kTetta4) / 6;
             }
 
             //вырезать, сделать уникальный метод
